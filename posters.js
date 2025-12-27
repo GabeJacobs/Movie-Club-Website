@@ -114,7 +114,7 @@ function clearPosterCache(titles) {
 
 // Auto-clear cache for movies with updated mappings on page load
 (function() {
-    const moviesToRefresh = ['Cries and Whispers', 'Ghost in the Shell', 'A Swedish Love Story'];
+    const moviesToRefresh = ['Cries and Whispers', 'Ghost in the Shell', 'A Swedish Love Story', 'Jonathan'];
     // Clear cache if any of these movies are cached (to ensure updated mappings are used)
     const cachedMovies = moviesToRefresh.filter(title => posterCache[title]);
     
