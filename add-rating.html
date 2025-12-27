@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Rating | Movie Club</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="add-rating.css">
+</head>
+<body>
+    <header class="compact-header">
+        <nav class="main-nav">
+            <a href="index.html" class="nav-logo">Movie Club</a>
+            <div class="nav-links">
+                <a href="index.html">All Films</a>
+                <a href="favorites.html">Favorites</a>
+                <a href="roundup.html">Year in Review</a>
+                <a href="add-rating.html" class="active">Add Rating</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="add-rating-page">
+        <div class="page-title">
+            <h1>Add New Rating</h1>
+            <p>Search for a film and submit your club's ratings</p>
+        </div>
+
+        <section class="search-section">
+            <div class="search-box">
+                <input type="text" 
+                       id="movie-search" 
+                       placeholder="Search for a movie..."
+                       autocomplete="off">
+                <button id="search-btn" class="btn-primary">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="M21 21l-4.35-4.35"></path>
+                    </svg>
+                    Search
+                </button>
+            </div>
+            <div id="search-results" class="search-results"></div>
+        </section>
+
+        <section id="rating-section" class="rating-section hidden">
+            <div class="selected-movie">
+                <div class="movie-poster-large">
+                    <img id="selected-poster" src="" alt="Movie poster">
+                </div>
+                <div class="movie-details">
+                    <h2 id="selected-title"></h2>
+                    <div class="movie-meta">
+                        <span id="selected-year"></span>
+                        <span id="selected-director"></span>
+                        <span id="selected-runtime"></span>
+                    </div>
+                    <p id="selected-plot"></p>
+                </div>
+            </div>
+
+            <form id="rating-form" class="rating-form">
+                <h3>Club Ratings</h3>
+                
+                <div class="picker-select">
+                    <label for="picker">Who picked this film?</label>
+                    <select id="picker" required>
+                        <option value="">Select picker...</option>
+                        <option value="Gabe">Gabe</option>
+                        <option value="Isa">Isa</option>
+                        <option value="Shane">Shane</option>
+                        <option value="Bo">Bo</option>
+                        <option value="Andrew">Andrew</option>
+                        <option value="Rachel">Rachel</option>
+                    </select>
+                </div>
+
+                <div class="ratings-inputs">
+                    <div class="rating-input-group">
+                        <label for="rating-gabe">Gabe</label>
+                        <input type="number" id="rating-gabe" min="1" max="10" step="0.5" placeholder="—">
+                    </div>
+                    <div class="rating-input-group">
+                        <label for="rating-isa">Isa</label>
+                        <input type="number" id="rating-isa" min="1" max="10" step="0.5" placeholder="—">
+                    </div>
+                    <div class="rating-input-group">
+                        <label for="rating-shane">Shane</label>
+                        <input type="number" id="rating-shane" min="1" max="10" step="0.5" placeholder="—">
+                    </div>
+                    <div class="rating-input-group">
+                        <label for="rating-bo">Bo</label>
+                        <input type="number" id="rating-bo" min="1" max="10" step="0.5" placeholder="—">
+                    </div>
+                    <div class="rating-input-group">
+                        <label for="rating-andrew">Andrew</label>
+                        <input type="number" id="rating-andrew" min="1" max="10" step="0.5" placeholder="—">
+                    </div>
+                    <div class="rating-input-group">
+                        <label for="rating-rachel">Rachel</label>
+                        <input type="number" id="rating-rachel" min="1" max="10" step="0.5" placeholder="—">
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" id="clear-btn" class="btn-secondary">Clear</button>
+                    <button type="submit" class="btn-primary">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                            <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                            <polyline points="7 3 7 8 15 8"></polyline>
+                        </svg>
+                        Save Rating
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <section id="saved-ratings" class="saved-ratings">
+            <h3>Recently Added</h3>
+            <p class="empty-state" id="no-ratings">No ratings added yet. Search for a movie above to get started.</p>
+            <div id="ratings-list" class="ratings-list"></div>
+        </section>
+    </main>
+
+    <div id="toast" class="toast"></div>
+
+    <footer>
+        <p>Made with 🎬 by the Movie Club</p>
+    </footer>
+
+    <script src="add-rating.js"></script>
+</body>
+</html>
+

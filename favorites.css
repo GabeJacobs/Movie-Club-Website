@@ -1,0 +1,478 @@
+/* Favorites Page Styles */
+
+.favorites-header {
+    text-align: center;
+    padding: 4rem 2rem 3rem;
+    background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+}
+
+.favorites-header h1 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(2.5rem, 6vw, 4rem);
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.favorites-header p {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+}
+
+/* Member Tabs */
+.member-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1.5rem 2rem;
+    background: var(--bg-primary);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    flex-wrap: wrap;
+}
+
+.member-tab {
+    position: relative;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-weight: 600;
+    background: transparent;
+    border: 2px solid var(--border);
+    border-radius: 50px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.member-tab:hover {
+    border-color: var(--accent-dim);
+    color: var(--text-primary);
+}
+
+.member-tab.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--bg-primary);
+}
+
+/* Main Content */
+.favorites-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 3rem 2rem;
+}
+
+/* Member Favorites Section */
+.member-favorites {
+    animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Member Profile Header */
+.member-profile {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin-bottom: 3rem;
+    padding: 2rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+}
+
+.member-avatar-large {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dim) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--bg-primary);
+    flex-shrink: 0;
+}
+
+.member-info h2 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 2rem;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.member-info p {
+    color: var(--text-secondary);
+    font-size: 1rem;
+}
+
+.member-quick-stats {
+    display: flex;
+    gap: 2rem;
+    margin-top: 1rem;
+}
+
+.quick-stat {
+    text-align: center;
+}
+
+.quick-stat-value {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--accent);
+}
+
+.quick-stat-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+/* Numerical Stats */
+.numerical-stats {
+    margin-bottom: 3rem;
+}
+
+.stats-row {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.num-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    min-width: 80px;
+    transition: all 0.3s ease;
+}
+
+.num-stat:hover {
+    border-color: var(--accent-dim);
+    transform: translateY(-2px);
+}
+
+.num-stat-value {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 0.5rem;
+}
+
+.num-stat-label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+/* Favorites Sections */
+.favorites-section {
+    margin-bottom: 4rem;
+}
+
+.favorites-section-title {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.favorites-section-title h3 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1.5rem;
+    color: var(--text-primary);
+}
+
+.favorites-section-title .emoji {
+    font-size: 1.5rem;
+}
+
+.favorites-section-subtitle {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-left: auto;
+}
+
+/* Perfect 10s Grid */
+.perfect-tens-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.favorite-card {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: fadeInUp 0.5s ease forwards;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.favorite-card:hover {
+    transform: translateY(-8px);
+    border-color: var(--accent);
+    box-shadow: 0 20px 40px rgba(229, 192, 123, 0.1);
+}
+
+.favorite-card-poster {
+    position: relative;
+    aspect-ratio: 2/3;
+    overflow: hidden;
+}
+
+.favorite-card-poster img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.favorite-card:hover .favorite-card-poster img {
+    transform: scale(1.05);
+}
+
+.favorite-card-rating {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--rating-high);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--bg-primary);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.favorite-card-rating.perfect {
+    background: linear-gradient(135deg, #ffd700 0%, #ffaa00 100%);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.4); }
+    50% { box-shadow: 0 0 0 10px rgba(255, 215, 0, 0); }
+}
+
+.favorite-card-info {
+    padding: 1rem;
+}
+
+.favorite-card-title {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1rem;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+    line-height: 1.3;
+}
+
+.favorite-card-picker {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+/* Top Rated List */
+.top-rated-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.top-rated-item {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.25rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.3s ease;
+    animation: slideInLeft 0.4s ease forwards;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.top-rated-item:hover {
+    border-color: var(--accent-dim);
+    background: var(--bg-card-hover);
+}
+
+.top-rated-rank {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--accent);
+    width: 40px;
+    text-align: center;
+}
+
+.top-rated-poster {
+    width: 60px;
+    height: 90px;
+    border-radius: 6px;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.top-rated-info {
+    flex: 1;
+}
+
+.top-rated-title {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1.1rem;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+}
+
+.top-rated-picker {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.top-rated-score {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--rating-high);
+}
+
+/* No Favorites State */
+.no-favorites {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--text-muted);
+}
+
+.no-favorites .emoji {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.no-favorites p {
+    font-size: 1.1rem;
+}
+
+/* Animation Delays */
+.favorite-card:nth-child(1) { animation-delay: 0.1s; }
+.favorite-card:nth-child(2) { animation-delay: 0.15s; }
+.favorite-card:nth-child(3) { animation-delay: 0.2s; }
+.favorite-card:nth-child(4) { animation-delay: 0.25s; }
+.favorite-card:nth-child(5) { animation-delay: 0.3s; }
+.favorite-card:nth-child(6) { animation-delay: 0.35s; }
+.favorite-card:nth-child(7) { animation-delay: 0.4s; }
+.favorite-card:nth-child(8) { animation-delay: 0.45s; }
+
+.top-rated-item:nth-child(1) { animation-delay: 0.05s; }
+.top-rated-item:nth-child(2) { animation-delay: 0.1s; }
+.top-rated-item:nth-child(3) { animation-delay: 0.15s; }
+.top-rated-item:nth-child(4) { animation-delay: 0.2s; }
+.top-rated-item:nth-child(5) { animation-delay: 0.25s; }
+.top-rated-item:nth-child(6) { animation-delay: 0.3s; }
+.top-rated-item:nth-child(7) { animation-delay: 0.35s; }
+.top-rated-item:nth-child(8) { animation-delay: 0.4s; }
+.top-rated-item:nth-child(9) { animation-delay: 0.45s; }
+.top-rated-item:nth-child(10) { animation-delay: 0.5s; }
+.top-rated-item:nth-child(n+11) { animation-delay: 0.55s; }
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .favorites-header {
+        padding: 3rem 1.5rem 2rem;
+    }
+
+    .member-tabs {
+        padding: 1rem;
+        gap: 0.5rem;
+    }
+
+    .member-tab {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    .favorites-content {
+        padding: 2rem 1rem;
+    }
+
+    .member-profile {
+        flex-direction: column;
+        text-align: center;
+        padding: 1.5rem;
+    }
+
+    .member-quick-stats {
+        justify-content: center;
+    }
+
+    .stats-row {
+        gap: 0.75rem;
+    }
+
+    .num-stat {
+        padding: 0.75rem 1rem;
+        min-width: 70px;
+    }
+
+    .num-stat-value {
+        font-size: 1.75rem;
+    }
+
+    .perfect-tens-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 1rem;
+    }
+
+    .top-rated-item {
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .top-rated-score {
+        width: 100%;
+        text-align: right;
+    }
+}
+
