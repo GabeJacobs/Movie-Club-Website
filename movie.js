@@ -103,9 +103,15 @@ function updateMovieRatings(title, newRatings) {
 // Delete movie
 function deleteMovie(title) {
     const modified = getModifiedMovies();
+    
+    // Add to deleted array if not already there
     if (!modified.deleted.includes(title)) {
         modified.deleted.push(title);
     }
+    
+    // Also remove from the movies array (for recently added films)
+    modified.movies = modified.movies.filter(m => m.title !== title);
+    
     saveModifiedMovies(modified);
 }
 

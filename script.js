@@ -255,16 +255,9 @@ function setupFilters() {
 // Setup sort and year selects
 function setupSort() {
     const sortSelect = document.getElementById('sort-select');
-    const yearSelect = document.getElementById('year-select');
     
     sortSelect.addEventListener('change', () => {
         sortMovies(sortSelect.value, currentYear);
-        renderMovies();
-    });
-    
-    yearSelect.addEventListener('change', () => {
-        currentYear = yearSelect.value;
-        sortMovies(currentSort, currentYear);
         renderMovies();
     });
 }

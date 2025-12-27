@@ -210,10 +210,32 @@ function submitRating(e) {
 // Delete a saved rating
 function deleteRating(id) {
     const savedRatings = loadSavedRatings();
-    const filtered = savedRatings.filter(r => r.id !== id);
-    saveRatings(filtered);
-    renderSavedRatings();
-    showToast('Rating removed', 'success');
+    
+    // Find the rating to delete so we can get its title
+    const ratingToDelete = savedRatings.find(r => r.id === id);
+    
+    if (ratingToDelete) {
+        // Remove from saved ratings
+        const filtered = savedRatings.filter(r => r.id !== id);
+        
+        // Also add to the global deleted list
+        const stored = localStorage.getItem(STORAGE_KEY);
+        const data = stored ? JSON.parse(stored) : { movies: [], deleted: [] };
+        
+        // Add to deleted array if not already there
+        if (!data.deleted.includes(ratingToDelete.title)) {
+            data.deleted.push(ratingToDelete.title);
+        }
+        
+        // Update movies array (remove the deleted one)
+        data.movies = filtered;
+        
+        // Save back to localStorage
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        
+        renderSavedRatings();
+        showToast('Rating removed from all pages', 'success');
+    }
 }
 
 // Render saved ratings
