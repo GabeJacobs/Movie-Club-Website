@@ -7,16 +7,20 @@ function getModifiedMovies() {
     return stored ? JSON.parse(stored) : { movies: [], deleted: [] };
 }
 
-// Get all movies (including modifications)
+// Get all movies (including modifications and new additions)
 function getAllMovies() {
     const modified = getModifiedMovies();
     let allMovies = [...movies];
     
-    // Apply modifications
+    // Apply modifications and add new movies
     modified.movies.forEach(mod => {
         const index = allMovies.findIndex(m => m.title === mod.title);
         if (index !== -1) {
+            // Update existing movie
             allMovies[index] = { ...allMovies[index], ...mod };
+        } else {
+            // Add new movie (from add-rating page)
+            allMovies.push(mod);
         }
     });
     
@@ -26,8 +30,9 @@ function getAllMovies() {
     return allMovies;
 }
 
-// Current sort state
+// Current sort and filter state
 let currentSort = 'date-desc';
+let currentYear = 'all';
 let sortedMovies = [];
 
 // Get rating class based on value
@@ -68,6 +73,13 @@ function createMovieCard(movie, index) {
         `;
     }).join('');
 
+    // Format date
+    const dateStr = movie.dateAdded ? new Date(movie.dateAdded).toLocaleDateString('en-US', { 
+        month: 'short', 
+        day: 'numeric', 
+        year: 'numeric' 
+    }) : '';
+
     const movieUrl = `movie.html?title=${encodeURIComponent(movie.title)}`;
     
     return `
@@ -85,6 +97,7 @@ function createMovieCard(movie, index) {
                 </div>
                 <div class="movie-info">
                     <h2 class="movie-title">${movie.title}</h2>
+                    ${dateStr ? `<div class="movie-date">${dateStr}</div>` : ''}
                     <div class="ratings-grid">
                         ${ratingsHTML}
                     </div>
@@ -94,19 +107,42 @@ function createMovieCard(movie, index) {
     `;
 }
 
+// Filter movies by year
+function filterMoviesByYear(movies, year) {
+    if (year === 'all') return movies;
+    
+    return movies.filter(movie => {
+        if (!movie.dateAdded) return false;
+        const movieYear = new Date(movie.dateAdded).getFullYear();
+        return movieYear === parseInt(year);
+    });
+}
+
 // Sort movies based on current sort option
-function sortMovies(sortType) {
+function sortMovies(sortType, year = currentYear) {
     currentSort = sortType;
-    const allMovies = getAllMovies();
+    currentYear = year;
+    let allMovies = getAllMovies();
+    
+    // Apply year filter first
+    allMovies = filterMoviesByYear(allMovies, currentYear);
     
     switch (sortType) {
         case 'date-desc':
-            // Original order (most recent first, which is how movies array is structured)
-            sortedMovies = [...allMovies].reverse();
+            // Most recent first
+            sortedMovies = [...allMovies].sort((a, b) => {
+                const dateA = a.dateAdded ? new Date(a.dateAdded) : new Date(0);
+                const dateB = b.dateAdded ? new Date(b.dateAdded) : new Date(0);
+                return dateB - dateA;
+            });
             break;
         case 'date-asc':
             // Oldest first
-            sortedMovies = [...allMovies];
+            sortedMovies = [...allMovies].sort((a, b) => {
+                const dateA = a.dateAdded ? new Date(a.dateAdded) : new Date(0);
+                const dateB = b.dateAdded ? new Date(b.dateAdded) : new Date(0);
+                return dateA - dateB;
+            });
             break;
         case 'rating-desc':
             // Highest rated first
@@ -125,7 +161,11 @@ function sortMovies(sortType) {
             sortedMovies = [...allMovies].sort((a, b) => b.title.localeCompare(a.title));
             break;
         default:
-            sortedMovies = [...allMovies].reverse();
+            sortedMovies = [...allMovies].sort((a, b) => {
+                const dateA = a.dateAdded ? new Date(a.dateAdded) : new Date(0);
+                const dateB = b.dateAdded ? new Date(b.dateAdded) : new Date(0);
+                return dateB - dateA;
+            });
     }
     
     return sortedMovies;
@@ -136,11 +176,10 @@ function renderMovies() {
     const grid = document.getElementById('movie-grid');
     grid.innerHTML = sortedMovies.map((movie, index) => createMovieCard(movie, index)).join('');
     
-    // Update stats
-    const allMovies = getAllMovies();
-    document.getElementById('movie-count').textContent = allMovies.length;
-    const avgRating = allMovies.length > 0 
-        ? allMovies.reduce((sum, m) => sum + m.average, 0) / allMovies.length 
+    // Update stats based on currently filtered movies
+    document.getElementById('movie-count').textContent = sortedMovies.length;
+    const avgRating = sortedMovies.length > 0 
+        ? sortedMovies.reduce((sum, m) => sum + m.average, 0) / sortedMovies.length 
         : 0;
     document.getElementById('avg-rating').textContent = avgRating.toFixed(1);
     
@@ -213,12 +252,19 @@ function setupFilters() {
     });
 }
 
-// Setup sort select
+// Setup sort and year selects
 function setupSort() {
     const sortSelect = document.getElementById('sort-select');
+    const yearSelect = document.getElementById('year-select');
     
     sortSelect.addEventListener('change', () => {
-        sortMovies(sortSelect.value);
+        sortMovies(sortSelect.value, currentYear);
+        renderMovies();
+    });
+    
+    yearSelect.addEventListener('change', () => {
+        currentYear = yearSelect.value;
+        sortMovies(currentSort, currentYear);
         renderMovies();
     });
 }

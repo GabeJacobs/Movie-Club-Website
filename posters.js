@@ -25,7 +25,7 @@ const titleMappings = {
     "Burning": { title: "Burning", year: "2018" },
     "Blowup": "Blow-Up",
     "Killers of Sheep": "Killer of Sheep",
-    "A Swedish Love Story": { directUrl: "https://m.media-amazon.com/images/M/MV5BYWIxMDljMWQtYTE4Yi00ZjMxLWFlMjgtODk2YzU4MGM1ZDFjXkEyXkFqcGdeQXVyMjA0MzYwMDY@._V1_SX300.jpg" }
+    "A Swedish Love Story": { imdbId: "tt0065955" }
 };
 
 // Queue for rate-limiting API requests
@@ -114,7 +114,7 @@ function clearPosterCache(titles) {
 
 // Auto-clear cache for movies with updated mappings on page load
 (function() {
-    const moviesToRefresh = ['Cries and Whispers', 'Ghost in the Shell'];
+    const moviesToRefresh = ['Cries and Whispers', 'Ghost in the Shell', 'A Swedish Love Story'];
     // Clear cache if any of these movies are cached (to ensure updated mappings are used)
     const cachedMovies = moviesToRefresh.filter(title => posterCache[title]);
     

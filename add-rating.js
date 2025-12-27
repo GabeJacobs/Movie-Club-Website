@@ -15,15 +15,22 @@ const toast = document.getElementById('toast');
 // Selected movie data
 let selectedMovie = null;
 
+// Storage key - must match other pages
+const STORAGE_KEY = 'movieClubData';
+
 // Load saved ratings from localStorage
 function loadSavedRatings() {
-    const saved = localStorage.getItem('movieClubRatings');
-    return saved ? JSON.parse(saved) : [];
+    const stored = localStorage.getItem(STORAGE_KEY);
+    const data = stored ? JSON.parse(stored) : { movies: [], deleted: [] };
+    return data.movies || [];
 }
 
 // Save ratings to localStorage
-function saveRatings(ratings) {
-    localStorage.setItem('movieClubRatings', JSON.stringify(ratings));
+function saveRatings(newMovies) {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    const data = stored ? JSON.parse(stored) : { movies: [], deleted: [] };
+    data.movies = newMovies;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
 
 // Show toast notification
@@ -124,7 +131,7 @@ function clearForm() {
     selectedMovie = null;
     ratingSection.classList.add('hidden');
     document.getElementById('picker').value = '';
-    ['gabe', 'isa', 'shane', 'bo', 'andrew', 'rachel'].forEach(name => {
+    ['gabe', 'shane', 'bo', 'andrew', 'rachel'].forEach(name => {
         document.getElementById(`rating-${name}`).value = '';
     });
 }
@@ -161,7 +168,7 @@ function submitRating(e) {
 
     const ratings = {
         Gabe: document.getElementById('rating-gabe').value || '',
-        Isa: document.getElementById('rating-isa').value || '',
+        Isa: '',  // Isa no longer in club, but field kept for data consistency
         Shane: document.getElementById('rating-shane').value || '',
         Bo: document.getElementById('rating-bo').value || '',
         Andrew: document.getElementById('rating-andrew').value || '',
@@ -178,13 +185,14 @@ function submitRating(e) {
     const average = calculateAverage(ratings);
 
     const newRating = {
-        id: Date.now(),
         title: selectedMovie.Title,
-        year: selectedMovie.Year,
-        poster: selectedMovie.Poster,
         picker: picker,
         ratings: ratings,
-        average: average,
+        average: parseFloat(average.toFixed(2)),
+        // Keep extra metadata for display in this page
+        id: Date.now(),
+        year: selectedMovie.Year,
+        poster: selectedMovie.Poster,
         dateAdded: new Date().toISOString()
     };
 

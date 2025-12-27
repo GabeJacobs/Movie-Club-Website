@@ -7,16 +7,20 @@ function getModifiedMovies() {
     return stored ? JSON.parse(stored) : { movies: [], deleted: [] };
 }
 
-// Get all movies (including modifications)
+// Get all movies (including modifications and new additions)
 function getAllMovies() {
     const modified = getModifiedMovies();
     let allMovies = [...movies];
     
-    // Apply modifications
+    // Apply modifications and add new movies
     modified.movies.forEach(mod => {
         const index = allMovies.findIndex(m => m.title === mod.title);
         if (index !== -1) {
+            // Update existing movie
             allMovies[index] = { ...allMovies[index], ...mod };
+        } else {
+            // Add new movie (from add-rating page)
+            allMovies.push(mod);
         }
     });
     
@@ -29,9 +33,24 @@ function getAllMovies() {
 // Member names
 const members = ['Gabe', 'Isa', 'Shane', 'Bo', 'Andrew', 'Rachel'];
 
+// Current year filter
+let currentYear = '2025';
+
+// Filter movies by year
+function filterMoviesByYear(movies, year) {
+    if (year === 'all') return movies;
+    
+    return movies.filter(movie => {
+        if (!movie.dateAdded) return false;
+        const movieYear = new Date(movie.dateAdded).getFullYear();
+        return movieYear === parseInt(year);
+    });
+}
+
 // Calculate statistics
-function calculateStats() {
-    const allMovies = getAllMovies();
+function calculateStats(year = currentYear) {
+    let allMovies = getAllMovies();
+    allMovies = filterMoviesByYear(allMovies, year);
     const stats = {
         totalFilms: allMovies.length,
         totalAverage: 0,
@@ -467,8 +486,15 @@ async function renderTimeline(stats) {
 }
 
 // Initialize page
-async function init() {
-    const stats = calculateStats();
+async function init(year = currentYear) {
+    currentYear = year;
+    const stats = calculateStats(year);
+    
+    // Update hero year display
+    const heroYear = document.getElementById('hero-year');
+    if (heroYear) {
+        heroYear.textContent = year === 'all' ? 'All Time' : year;
+    }
     
     // Render sync sections
     renderHeroStats(stats);
@@ -483,6 +509,23 @@ async function init() {
     await renderTimeline(stats);
 }
 
+// Setup year selector
+function setupYearSelector() {
+    const yearSelect = document.getElementById('year-select');
+    if (yearSelect) {
+        yearSelect.addEventListener('change', () => {
+            init(yearSelect.value);
+        });
+    }
+}
+
 // Run on page load
-document.addEventListener('DOMContentLoaded', init);
+document.addEventListener('DOMContentLoaded', () => {
+    setupYearSelector();
+    
+    // Get current year or use 2025 as default
+    const yearSelect = document.getElementById('year-select');
+    const initialYear = yearSelect ? yearSelect.value : '2025';
+    init(initialYear);
+});
 

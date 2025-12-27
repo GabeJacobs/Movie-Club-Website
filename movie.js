@@ -12,16 +12,20 @@ function saveModifiedMovies(data) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
 
-// Get all movies (including modifications)
+// Get all movies (including modifications and new additions)
 function getAllMovies() {
     const modified = getModifiedMovies();
     let allMovies = [...movies];
     
-    // Apply modifications
+    // Apply modifications and add new movies
     modified.movies.forEach(mod => {
         const index = allMovies.findIndex(m => m.title === mod.title);
         if (index !== -1) {
+            // Update existing movie
             allMovies[index] = { ...allMovies[index], ...mod };
+        } else {
+            // Add new movie (from add-rating page)
+            allMovies.push(mod);
         }
     });
     
@@ -72,7 +76,7 @@ function updateMovieRatings(title, newRatings) {
     const existingIndex = modified.movies.findIndex(m => m.title === title);
     
     // Calculate new average
-    const members = ['Gabe', 'Shane', 'Bo', 'Andrew', 'Rachel'];
+    const members = ['Gabe', 'Isa', 'Shane', 'Bo', 'Andrew', 'Rachel'];
     const validRatings = members
         .map(m => parseRating(newRatings[m]))
         .filter(r => r !== null);
@@ -107,7 +111,7 @@ function deleteMovie(title) {
 
 // Create movie detail HTML
 function createMovieDetailHTML(movie) {
-    const members = ['Gabe', 'Shane', 'Bo', 'Andrew', 'Rachel'];
+    const members = ['Gabe', 'Isa', 'Shane', 'Bo', 'Andrew', 'Rachel'];
     const ratingClass = getRatingClass(movie.average);
     
     // Calculate stats
@@ -186,6 +190,15 @@ function createMovieDetailHTML(movie) {
                     </svg>
                     ${movie.average.toFixed(1)} avg
                 </span>
+                ${movie.dateAdded ? `<span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>
+                    ${new Date(movie.dateAdded).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                </span>` : ''}
             </div>
 
             <div class="ratings-section">
@@ -306,7 +319,7 @@ function toggleFavorite(title) {
 
 // Show edit modal
 function showEditModal(movie) {
-    const members = ['Gabe', 'Shane', 'Bo', 'Andrew', 'Rachel'];
+    const members = ['Gabe', 'Isa', 'Shane', 'Bo', 'Andrew', 'Rachel'];
     
     const modalHTML = `
         <div class="modal-overlay" id="edit-modal">

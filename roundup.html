@@ -25,7 +25,15 @@
 
     <section class="hero-section">
         <div class="hero-content">
-            <span class="hero-year">2024</span>
+            <div class="year-selector">
+                <select id="year-select" class="year-select-roundup">
+                    <option value="2026">2026</option>
+                    <option value="2025" selected>2025</option>
+                    <option value="2024">2024</option>
+                    <option value="all">All Time</option>
+                </select>
+            </div>
+            <span class="hero-year" id="hero-year">2025</span>
             <h1 class="hero-title">Year in Review</h1>
             <p class="hero-subtitle">A celebration of cinema, friendship, and questionable taste</p>
         </div>

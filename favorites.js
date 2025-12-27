@@ -7,16 +7,20 @@ function getModifiedMovies() {
     return stored ? JSON.parse(stored) : { movies: [], deleted: [] };
 }
 
-// Get all movies (including modifications)
+// Get all movies (including modifications and new additions)
 function getAllMovies() {
     const modified = getModifiedMovies();
     let allMovies = [...movies];
     
-    // Apply modifications
+    // Apply modifications and add new movies
     modified.movies.forEach(mod => {
         const index = allMovies.findIndex(m => m.title === mod.title);
         if (index !== -1) {
+            // Update existing movie
             allMovies[index] = { ...allMovies[index], ...mod };
+        } else {
+            // Add new movie (from add-rating page)
+            allMovies.push(mod);
         }
     });
     
@@ -29,7 +33,6 @@ function getAllMovies() {
 // Member descriptions
 const memberDescriptions = {
     Gabe: "A champion of international cinema and psychological dramas",
-    Isa: "Drawn to powerful stories and Pedro Almodóvar",
     Shane: "Curator of arthouse gems and visual masterpieces",
     Bo: "A fan of classic Hollywood and genre-bending films",
     Andrew: "Appreciator of intense character studies",
