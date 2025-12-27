@@ -31,7 +31,7 @@ function getAllMovies() {
 }
 
 // Current sort and filter state
-let currentSort = 'date-desc';
+let currentSort = 'date-asc';
 let currentYear = 'all';
 let sortedMovies = [];
 
@@ -265,7 +265,7 @@ function setupSort() {
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
     // Initialize with default sort (most recent first)
-    sortMovies('date-desc');
+    sortMovies('date-asc');
     renderMovies();
     setupFilters();
     setupSort();
