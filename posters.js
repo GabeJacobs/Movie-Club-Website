@@ -1,5 +1,5 @@
 // OMDB API key
-const OMDB_API_KEY = 'd64a5f81';
+const OMDB_API_KEY = '3e974fca';
 
 // Get poster cache from localStorage
 const posterCache = JSON.parse(localStorage.getItem('moviePosterCache') || '{}');
