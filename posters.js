@@ -147,7 +147,7 @@ function clearPosterCache(titles) {
 }
 
 // Force-refresh these posters for all users (add titles here when mappings change)
-const forceRefreshPosters = ['The Boys Next Door'];
+const forceRefreshPosters = ['The Boys Next Door', 'A Hero'];
 
 // On page load, purge bad cached URLs and force-refresh specific posters
 (function() {
