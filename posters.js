@@ -146,7 +146,10 @@ function clearPosterCache(titles) {
     console.log('Cleared cache for:', titles);
 }
 
-// On page load, purge any cached placeholder URLs so they get refetched
+// Force-refresh these posters for all users (add titles here when mappings change)
+const forceRefreshPosters = ['The Boys Next Door'];
+
+// On page load, purge bad cached URLs and force-refresh specific posters
 (function() {
     let purged = [];
     Object.keys(posterCache).forEach(title => {
@@ -155,8 +158,14 @@ function clearPosterCache(titles) {
             purged.push(title);
         }
     });
+    forceRefreshPosters.forEach(title => {
+        if (posterCache[title]) {
+            delete posterCache[title];
+            purged.push(title);
+        }
+    });
     if (purged.length > 0) {
         localStorage.setItem('moviePosterCache', JSON.stringify(posterCache));
-        console.log('Purged bad cached posters for:', purged);
+        console.log('Purged cached posters for:', purged);
     }
 })();
