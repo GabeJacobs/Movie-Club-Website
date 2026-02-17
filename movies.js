@@ -4,7 +4,7 @@ const movies = [
         picker: "Shane",
         ratings: { Gabe: "8", Isa: "7", Shane: "9", Bo: "8", Andrew: "-", Rachel: "" },
         average: 8,
-        dateAdded: "2025-12-20T20:00:00.000Z"
+        dateAdded: "2024-09-07T19:00:00.000Z"
     },
     {
         title: "Burning",
@@ -473,7 +473,7 @@ const movies = [
         picker: "Rachel",
         ratings: { Gabe: "10", Isa: "", Shane: "9", Bo: "9", Andrew: "", Rachel: "9" },
         average: 9.25,
-        dateAdded: "2024-09-07T19:00:00.000Z"
+        dateAdded: "2025-12-20T20:00:00.000Z"
     }
 ];
 
