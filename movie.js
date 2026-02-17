@@ -1,38 +1,12 @@
-// Storage key for modified movies
-const STORAGE_KEY = 'movieClubData';
-
-// Get modified movies from localStorage
-function getModifiedMovies() {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    return stored ? JSON.parse(stored) : { movies: [], deleted: [] };
-}
-
-// Save modified movies to localStorage
-function saveModifiedMovies(data) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-}
-
-// Get all movies (including modifications and new additions)
-function getAllMovies() {
-    const modified = getModifiedMovies();
-    let allMovies = [...movies];
-    
-    // Apply modifications and add new movies
-    modified.movies.forEach(mod => {
-        const index = allMovies.findIndex(m => m.title === mod.title);
-        if (index !== -1) {
-            // Update existing movie
-            allMovies[index] = { ...allMovies[index], ...mod };
-        } else {
-            // Add new movie (from add-rating page)
-            allMovies.push(mod);
-        }
-    });
-    
-    // Filter out deleted movies
-    allMovies = allMovies.filter(m => !modified.deleted.includes(m.title));
-    
-    return allMovies;
+// Get all movies from Firebase (falls back to static movies.js)
+async function getAllMovies() {
+    try {
+        await fbMigrateIfNeeded();
+        return await fbGetAllMovies();
+    } catch (error) {
+        console.warn('Firebase unavailable, using static data:', error);
+        return [...movies];
+    }
 }
 
 // Get movie title from URL
@@ -65,17 +39,13 @@ function parseRating(rating) {
 }
 
 // Find movie by title
-function findMovie(title) {
-    const allMovies = getAllMovies();
+async function findMovie(title) {
+    const allMovies = await getAllMovies();
     return allMovies.find(m => m.title.toLowerCase() === title.toLowerCase());
 }
 
 // Update movie ratings
-function updateMovieRatings(title, newRatings) {
-    const modified = getModifiedMovies();
-    const existingIndex = modified.movies.findIndex(m => m.title === title);
-    
-    // Calculate new average
+async function updateMovieRatings(title, newRatings) {
     const members = ['Gabe', 'Isa', 'Shane', 'Bo', 'Andrew', 'Rachel'];
     const validRatings = members
         .map(m => parseRating(newRatings[m]))
@@ -84,35 +54,15 @@ function updateMovieRatings(title, newRatings) {
         ? validRatings.reduce((sum, r) => sum + r, 0) / validRatings.length 
         : 0;
     
-    const updatedMovie = {
-        ...movies.find(m => m.title === title),
+    await fbUpdateMovie(title, {
         ratings: newRatings,
         average: parseFloat(average.toFixed(2))
-    };
-    
-    if (existingIndex !== -1) {
-        modified.movies[existingIndex] = updatedMovie;
-    } else {
-        modified.movies.push(updatedMovie);
-    }
-    
-    saveModifiedMovies(modified);
-    return updatedMovie;
+    });
 }
 
 // Delete movie
-function deleteMovie(title) {
-    const modified = getModifiedMovies();
-    
-    // Add to deleted array if not already there
-    if (!modified.deleted.includes(title)) {
-        modified.deleted.push(title);
-    }
-    
-    // Also remove from the movies array (for recently added films)
-    modified.movies = modified.movies.filter(m => m.title !== title);
-    
-    saveModifiedMovies(modified);
+async function deleteMovie(title) {
+    await fbDeleteMovie(title);
 }
 
 // Create movie detail HTML
@@ -386,7 +336,7 @@ function showEditModal(movie) {
         if (e.target === modal) closeModal();
     });
     
-    form.addEventListener('submit', (e) => {
+    form.addEventListener('submit', async (e) => {
         e.preventDefault();
         const formData = new FormData(form);
         const newRatings = {};
@@ -395,7 +345,7 @@ function showEditModal(movie) {
             newRatings[member] = formData.get(member) || '';
         });
         
-        updateMovieRatings(movie.title, newRatings);
+        await updateMovieRatings(movie.title, newRatings);
         closeModal();
         
         // Reload the page to show updated ratings
@@ -446,8 +396,8 @@ function showDeleteConfirmation(movie) {
         if (e.target === modal) closeModal();
     });
     
-    confirmBtn.addEventListener('click', () => {
-        deleteMovie(movie.title);
+    confirmBtn.addEventListener('click', async () => {
+        await deleteMovie(movie.title);
         closeModal();
         // Redirect to home page
         window.location.href = 'index.html';
@@ -455,7 +405,7 @@ function showDeleteConfirmation(movie) {
 }
 
 // Initialize page
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     const title = getMovieTitleFromURL();
     
     if (!title) {
@@ -463,7 +413,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    const movie = findMovie(decodeURIComponent(title));
+    const movie = await findMovie(decodeURIComponent(title));
     
     if (!movie) {
         showNotFound();

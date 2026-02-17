@@ -15,22 +15,14 @@ const toast = document.getElementById('toast');
 // Selected movie data
 let selectedMovie = null;
 
-// Storage key - must match other pages
-const STORAGE_KEY = 'movieClubData';
-
-// Load saved ratings from localStorage
-function loadSavedRatings() {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    const data = stored ? JSON.parse(stored) : { movies: [], deleted: [] };
-    return data.movies || [];
-}
-
-// Save ratings to localStorage
-function saveRatings(newMovies) {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    const data = stored ? JSON.parse(stored) : { movies: [], deleted: [] };
-    data.movies = newMovies;
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+// Load saved ratings from Firebase
+async function loadSavedRatings() {
+    try {
+        return await fbGetAllMovies();
+    } catch (error) {
+        console.warn('Firebase unavailable:', error);
+        return [];
+    }
 }
 
 // Show toast notification
@@ -152,7 +144,7 @@ function getRatingClass(value) {
 }
 
 // Submit rating
-function submitRating(e) {
+async function submitRating(e) {
     e.preventDefault();
 
     if (!selectedMovie) {
@@ -168,7 +160,7 @@ function submitRating(e) {
 
     const ratings = {
         Gabe: document.getElementById('rating-gabe').value || '',
-        Isa: '',  // Isa no longer in club, but field kept for data consistency
+        Isa: '',
         Shane: document.getElementById('rating-shane').value || '',
         Bo: document.getElementById('rating-bo').value || '',
         Andrew: document.getElementById('rating-andrew').value || '',
@@ -184,65 +176,51 @@ function submitRating(e) {
 
     const average = calculateAverage(ratings);
 
-    const newRating = {
+    const newMovie = {
         title: selectedMovie.Title,
         picker: picker,
         ratings: ratings,
         average: parseFloat(average.toFixed(2)),
-        // Keep extra metadata for display in this page
-        id: Date.now(),
-        year: selectedMovie.Year,
-        poster: selectedMovie.Poster,
         dateAdded: new Date().toISOString()
     };
 
-    // Save to localStorage
-    const savedRatings = loadSavedRatings();
-    savedRatings.unshift(newRating);
-    saveRatings(savedRatings);
-
-    // Update display
-    renderSavedRatings();
-    clearForm();
-    showToast(`"${newRating.title}" has been added!`, 'success');
-}
-
-// Delete a saved rating
-function deleteRating(id) {
-    const savedRatings = loadSavedRatings();
-    
-    // Find the rating to delete so we can get its title
-    const ratingToDelete = savedRatings.find(r => r.id === id);
-    
-    if (ratingToDelete) {
-        // Remove from saved ratings
-        const filtered = savedRatings.filter(r => r.id !== id);
+    try {
+        // Save to Firebase
+        await fbAddMovie(newMovie);
         
-        // Also add to the global deleted list
-        const stored = localStorage.getItem(STORAGE_KEY);
-        const data = stored ? JSON.parse(stored) : { movies: [], deleted: [] };
-        
-        // Add to deleted array if not already there
-        if (!data.deleted.includes(ratingToDelete.title)) {
-            data.deleted.push(ratingToDelete.title);
-        }
-        
-        // Update movies array (remove the deleted one)
-        data.movies = filtered;
-        
-        // Save back to localStorage
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-        
-        renderSavedRatings();
-        showToast('Rating removed from all pages', 'success');
+        // Update display
+        await renderSavedRatings();
+        clearForm();
+        showToast(`"${newMovie.title}" has been saved!`, 'success');
+    } catch (error) {
+        console.error('Failed to save movie:', error);
+        showToast('Failed to save. Please try again.', 'error');
     }
 }
 
-// Render saved ratings
-function renderSavedRatings() {
-    const savedRatings = loadSavedRatings();
+// Delete a saved rating by title
+async function deleteRating(title) {
+    try {
+        await fbDeleteMovie(title);
+        await renderSavedRatings();
+        showToast('Rating removed', 'success');
+    } catch (error) {
+        console.error('Failed to delete:', error);
+        showToast('Failed to delete. Please try again.', 'error');
+    }
+}
 
-    if (savedRatings.length === 0) {
+// Render recently added movies from Firebase
+async function renderSavedRatings() {
+    const allMovies = await loadSavedRatings();
+
+    // Show the 10 most recently added movies
+    const recentMovies = [...allMovies]
+        .filter(m => m.dateAdded)
+        .sort((a, b) => new Date(b.dateAdded) - new Date(a.dateAdded))
+        .slice(0, 10);
+
+    if (recentMovies.length === 0) {
         noRatings.style.display = 'block';
         ratingsList.innerHTML = '';
         return;
@@ -250,31 +228,34 @@ function renderSavedRatings() {
 
     noRatings.style.display = 'none';
 
-    ratingsList.innerHTML = savedRatings.map(rating => {
+    const items = [];
+    for (const rating of recentMovies) {
         const miniRatings = Object.entries(rating.ratings)
             .filter(([_, v]) => v && v !== '-')
             .map(([name, value]) => `<span class="mini-rating">${name}: <span>${value}</span></span>`)
             .join('');
 
-        return `
+        const posterUrl = await getPosterUrl(rating.title);
+
+        items.push(`
             <div class="saved-rating-item">
-                <img src="${rating.poster !== 'N/A' ? rating.poster : 'https://via.placeholder.com/60x90/1a1a1e/6e6e73?text=?'}" 
-                     alt="${rating.title}">
+                <img src="${posterUrl}" alt="${rating.title}">
                 <div class="saved-rating-info">
                     <span class="picker-tag">${rating.picker}'s Pick</span>
-                    <h4>${rating.title} <span style="color: var(--text-muted); font-weight: 400;">(${rating.year})</span></h4>
+                    <h4>${rating.title}</h4>
                     <div class="mini-ratings">${miniRatings}</div>
                 </div>
                 <div class="saved-rating-avg ${getRatingClass(rating.average)}">${rating.average.toFixed(1)}</div>
-                <button class="delete-btn" onclick="deleteRating(${rating.id})" title="Remove rating">
+                <button class="delete-btn" onclick="deleteRating('${rating.title.replace(/'/g, "\\'")}')" title="Remove rating">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M3 6h18"></path>
                         <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
                     </svg>
                 </button>
             </div>
-        `;
-    }).join('');
+        `);
+    }
+    ratingsList.innerHTML = items.join('');
 }
 
 // Event Listeners
@@ -303,6 +284,10 @@ clearBtn.addEventListener('click', clearForm);
 ratingForm.addEventListener('submit', submitRating);
 
 // Initialize
-document.addEventListener('DOMContentLoaded', renderSavedRatings);
+document.addEventListener('DOMContentLoaded', async () => {
+    // Ensure Firebase is populated, then show recent
+    await fbMigrateIfNeeded();
+    await renderSavedRatings();
+});
 
 

@@ -1,33 +1,12 @@
-// Storage key for modified movies
-const STORAGE_KEY = 'movieClubData';
-
-// Get modified movies from localStorage
-function getModifiedMovies() {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    return stored ? JSON.parse(stored) : { movies: [], deleted: [] };
-}
-
-// Get all movies (including modifications and new additions)
-function getAllMovies() {
-    const modified = getModifiedMovies();
-    let allMovies = [...movies];
-    
-    // Apply modifications and add new movies
-    modified.movies.forEach(mod => {
-        const index = allMovies.findIndex(m => m.title === mod.title);
-        if (index !== -1) {
-            // Update existing movie
-            allMovies[index] = { ...allMovies[index], ...mod };
-        } else {
-            // Add new movie (from add-rating page)
-            allMovies.push(mod);
-        }
-    });
-    
-    // Filter out deleted movies
-    allMovies = allMovies.filter(m => !modified.deleted.includes(m.title));
-    
-    return allMovies;
+// Get all movies from Firebase (falls back to static movies.js)
+async function getAllMovies() {
+    try {
+        await fbMigrateIfNeeded();
+        return await fbGetAllMovies();
+    } catch (error) {
+        console.warn('Firebase unavailable, using static data:', error);
+        return [...movies];
+    }
 }
 
 // Member names
@@ -48,8 +27,8 @@ function filterMoviesByYear(movies, year) {
 }
 
 // Calculate statistics
-function calculateStats(year = currentYear) {
-    let allMovies = getAllMovies();
+async function calculateStats(year = currentYear) {
+    let allMovies = await getAllMovies();
     allMovies = filterMoviesByYear(allMovies, year);
     const stats = {
         totalFilms: allMovies.length,
@@ -470,7 +449,7 @@ async function renderFlops(stats) {
 // Render timeline
 async function renderTimeline(stats) {
     const container = document.getElementById('films-timeline');
-    const allMovies = getAllMovies();
+    const allMovies = await getAllMovies();
     
     let html = '';
     for (const movie of allMovies) {
@@ -488,7 +467,7 @@ async function renderTimeline(stats) {
 // Initialize page
 async function init(year = currentYear) {
     currentYear = year;
-    const stats = calculateStats(year);
+    const stats = await calculateStats(year);
     
     // Update hero year display
     const heroYear = document.getElementById('hero-year');

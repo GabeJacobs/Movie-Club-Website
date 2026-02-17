@@ -1,33 +1,12 @@
-// Storage key for modified movies
-const STORAGE_KEY = 'movieClubData';
-
-// Get modified movies from localStorage
-function getModifiedMovies() {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    return stored ? JSON.parse(stored) : { movies: [], deleted: [] };
-}
-
-// Get all movies (including modifications and new additions)
-function getAllMovies() {
-    const modified = getModifiedMovies();
-    let allMovies = [...movies];
-    
-    // Apply modifications and add new movies
-    modified.movies.forEach(mod => {
-        const index = allMovies.findIndex(m => m.title === mod.title);
-        if (index !== -1) {
-            // Update existing movie
-            allMovies[index] = { ...allMovies[index], ...mod };
-        } else {
-            // Add new movie (from add-rating page)
-            allMovies.push(mod);
-        }
-    });
-    
-    // Filter out deleted movies
-    allMovies = allMovies.filter(m => !modified.deleted.includes(m.title));
-    
-    return allMovies;
+// Get all movies from Firebase (falls back to static movies.js)
+async function getAllMovies() {
+    try {
+        await fbMigrateIfNeeded();
+        return await fbGetAllMovies();
+    } catch (error) {
+        console.warn('Firebase unavailable, using static data:', error);
+        return [...movies];
+    }
 }
 
 // Current sort and filter state
@@ -115,10 +94,10 @@ function filterMoviesByYear(movies, year) {
 }
 
 // Sort movies based on current sort option
-function sortMovies(sortType, year = currentYear) {
+async function sortMovies(sortType, year = currentYear) {
     currentSort = sortType;
     currentYear = year;
-    let allMovies = getAllMovies();
+    let allMovies = await getAllMovies();
     
     // Apply year filter first
     allMovies = filterMoviesByYear(allMovies, currentYear);
@@ -258,16 +237,15 @@ function setupFilters() {
 function setupSort() {
     const sortSelect = document.getElementById('sort-select');
     
-    sortSelect.addEventListener('change', () => {
-        sortMovies(sortSelect.value, currentYear);
+    sortSelect.addEventListener('change', async () => {
+        await sortMovies(sortSelect.value, currentYear);
         renderMovies();
     });
 }
 
 // Initialize
-document.addEventListener('DOMContentLoaded', () => {
-    // Initialize with default sort (most recent first)
-    sortMovies('date-desc');
+document.addEventListener('DOMContentLoaded', async () => {
+    await sortMovies('date-desc');
     renderMovies();
     setupFilters();
     setupSort();

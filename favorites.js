@@ -1,33 +1,12 @@
-// Storage key for modified movies
-const STORAGE_KEY = 'movieClubData';
-
-// Get modified movies from localStorage
-function getModifiedMovies() {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    return stored ? JSON.parse(stored) : { movies: [], deleted: [] };
-}
-
-// Get all movies (including modifications and new additions)
-function getAllMovies() {
-    const modified = getModifiedMovies();
-    let allMovies = [...movies];
-    
-    // Apply modifications and add new movies
-    modified.movies.forEach(mod => {
-        const index = allMovies.findIndex(m => m.title === mod.title);
-        if (index !== -1) {
-            // Update existing movie
-            allMovies[index] = { ...allMovies[index], ...mod };
-        } else {
-            // Add new movie (from add-rating page)
-            allMovies.push(mod);
-        }
-    });
-    
-    // Filter out deleted movies
-    allMovies = allMovies.filter(m => !modified.deleted.includes(m.title));
-    
-    return allMovies;
+// Get all movies from Firebase (falls back to static movies.js)
+async function getAllMovies() {
+    try {
+        await fbMigrateIfNeeded();
+        return await fbGetAllMovies();
+    } catch (error) {
+        console.warn('Firebase unavailable, using static data:', error);
+        return [...movies];
+    }
 }
 
 // Member descriptions
@@ -60,9 +39,9 @@ function parseRating(ratingStr) {
 }
 
 // Calculate rating distribution for a member
-function calculateMemberStats(member) {
+async function calculateMemberStats(member) {
     const stats = {};
-    const allMovies = getAllMovies();
+    const allMovies = await getAllMovies();
     
     // Get all rated movies for this member
     const ratedMovies = allMovies
@@ -90,13 +69,13 @@ function calculateMemberStats(member) {
 }
 
 // Get member's favorite movies
-function getMemberFavorites(member) {
+async function getMemberFavorites(member) {
     const favorites = {
         perfectTens: [],
         allRatings: []
     };
     
-    const allMovies = getAllMovies();
+    const allMovies = await getAllMovies();
 
     // Get all movies this member rated
     const ratedMovies = allMovies
@@ -130,7 +109,7 @@ function getMemberFavorites(member) {
     favorites.numTens = favorites.perfectTens.length;
     
     // Calculate interesting stats
-    favorites.stats = calculateMemberStats(member);
+    favorites.stats = await calculateMemberStats(member);
 
     return favorites;
 }
@@ -138,7 +117,7 @@ function getMemberFavorites(member) {
 // Render member favorites
 async function renderMemberFavorites(member) {
     const container = document.getElementById('favorites-container');
-    const favorites = getMemberFavorites(member);
+    const favorites = await getMemberFavorites(member);
 
     let html = `
         <div class="member-profile">
