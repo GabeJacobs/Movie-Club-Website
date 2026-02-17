@@ -265,7 +265,7 @@ function setupSort() {
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
     // Initialize with default sort (most recent first)
-    sortMovies('date-asc');
+    sortMovies('date-desc');
     renderMovies();
     setupFilters();
     setupSort();

@@ -115,7 +115,7 @@ function clearPosterCache(titles) {
 
 // Auto-clear cache for movies with updated mappings on page load
 (function() {
-    const moviesToRefresh = ['Jonathan', 'Kaili Blues'];
+    const moviesToRefresh = [];
     // Clear cache if any of these movies are cached (to ensure updated mappings are used)
     const cachedMovies = moviesToRefresh.filter(title => posterCache[title]);
     
