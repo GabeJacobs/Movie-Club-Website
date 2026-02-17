@@ -272,13 +272,17 @@ function showNotFound() {
 }
 
 // Load movie poster
-async function loadPoster(title) {
+async function loadPoster(title, storedPoster) {
     const posterImg = document.getElementById('movie-poster');
     if (posterImg) {
-        const posterUrl = await getPosterUrl(title);
+        const posterUrl = await getPosterUrl(title, storedPoster || undefined);
         posterImg.src = posterUrl;
         posterImg.onerror = () => {
-            posterImg.src = `https://via.placeholder.com/380x570/1a1a1e/6e6e73?text=${encodeURIComponent(title)}`;
+            if (storedPoster && posterImg.src !== storedPoster) {
+                posterImg.src = storedPoster;
+            } else {
+                posterImg.src = `https://via.placeholder.com/380x570/1a1a1e/6e6e73?text=${encodeURIComponent(title)}`;
+            }
         };
     }
 }
@@ -473,8 +477,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const container = document.getElementById('movie-detail');
     container.innerHTML = createMovieDetailHTML(movie);
 
-    // Load poster
-    loadPoster(movie.title);
+    // Load poster (use stored poster URL from movie data as fallback)
+    loadPoster(movie.title, movie.poster);
 
     // Animate bars
     animateRatingBars();

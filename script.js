@@ -50,11 +50,6 @@ function formatRating(rating) {
     return rating;
 }
 
-// Get movie poster - uses posters.js with caching
-async function fetchPoster(title) {
-    return await getPosterUrl(title);
-}
-
 // Create movie card HTML
 function createMovieCard(movie, index) {
     const ratingClass = getRatingClass(movie.average);
@@ -90,6 +85,7 @@ function createMovieCard(movie, index) {
                          src="https://via.placeholder.com/300x450/1a1a1e/6e6e73?text=Loading..." 
                          alt="${movie.title} poster"
                          data-title="${movie.title}"
+                         data-poster="${movie.poster || ''}"
                          loading="lazy">
                     <div class="poster-overlay"></div>
                     <div class="average-badge ${ratingClass}">${movie.average.toFixed(1)}</div>
@@ -218,10 +214,16 @@ async function loadPosters() {
         const batch = Array.from(posterImages).slice(i, i + batchSize);
         await Promise.all(batch.map(async (img) => {
             const title = img.dataset.title;
-            const posterUrl = await fetchPoster(title);
+            const storedPoster = img.dataset.poster || '';
+            const posterUrl = await getPosterUrl(title, storedPoster || undefined);
             img.src = posterUrl;
             img.onerror = () => {
-                img.src = `https://via.placeholder.com/300x450/1a1a1e/6e6e73?text=${encodeURIComponent(title)}`;
+                // If the fetched URL fails to load, try the stored poster as fallback
+                if (storedPoster && img.src !== storedPoster) {
+                    img.src = storedPoster;
+                } else {
+                    img.src = `https://via.placeholder.com/300x450/1a1a1e/6e6e73?text=${encodeURIComponent(title)}`;
+                }
             };
         }));
     }
