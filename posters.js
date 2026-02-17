@@ -18,7 +18,7 @@ const titleMappings = {
     "La Llorona": { title: "La Llorona", year: "2019" },
     "Point Blank": { title: "Point Blank", year: "1967" },
     "Ghost in the Shell": { imdbId: "tt0113568" },
-    "Jonathan": { title: "Jonathan", year: "1970" },
+    "Jonathan": { imdbId: "tt0065917" },
     "Kaili Blues": { imdbId: "tt4613272" },
     "Cold War": { title: "Cold War", year: "2018" },
     "The Wild Robot": { title: "The Wild Robot", year: "2024" },
