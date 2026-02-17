@@ -14,7 +14,7 @@ const titleMappings = {
     "Black Girl": { title: "Black Girl", year: "1966" },
     "Mirror": { title: "Mirror", year: "1975" },
     "The Haunting": { title: "The Haunting", year: "1963" },
-    "The Boys Next Door": { title: "The Boys Next Door", year: "1996" },
+    "The Boys Next Door": { imdbId: "tt0090770" },
     "Mulholland Dr": "Mulholland Drive",
     "A Tale of Summer": { title: "A Summer's Tale", year: "1996" },
     "La Llorona": { title: "La Llorona", year: "2019" },
