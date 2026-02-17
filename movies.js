@@ -474,6 +474,13 @@ const movies = [
         ratings: { Gabe: "10", Isa: "", Shane: "9", Bo: "9", Andrew: "", Rachel: "9" },
         average: 9.25,
         dateAdded: "2025-12-20T20:00:00.000Z"
+    },
+    {
+        title: "Kaili Blues",
+        picker: "Andrew",
+        ratings: { Gabe: "9", Isa: "", Shane: "9", Bo: "", Andrew: "10", Rachel: "" },
+        average: 9.33,
+        dateAdded: "2026-02-16T20:00:00.000Z"
     }
 ];
 
