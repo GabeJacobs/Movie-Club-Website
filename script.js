@@ -31,7 +31,7 @@ function getAllMovies() {
 }
 
 // Current sort and filter state
-let currentSort = 'date-asc';
+let currentSort = 'date-desc';
 let currentYear = 'all';
 let sortedMovies = [];
 

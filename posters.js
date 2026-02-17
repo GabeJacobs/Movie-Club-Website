@@ -19,6 +19,7 @@ const titleMappings = {
     "Point Blank": { title: "Point Blank", year: "1967" },
     "Ghost in the Shell": { imdbId: "tt0113568" },
     "Jonathan": { title: "Jonathan", year: "1970" },
+    "Kaili Blues": { title: "Kaili Blues", year: "2015" },
     "Cold War": { title: "Cold War", year: "2018" },
     "The Wild Robot": { title: "The Wild Robot", year: "2024" },
     "Cries and Whispers": { imdbId: "tt0069467" },
@@ -114,7 +115,7 @@ function clearPosterCache(titles) {
 
 // Auto-clear cache for movies with updated mappings on page load
 (function() {
-    const moviesToRefresh = ['Cries and Whispers', 'Ghost in the Shell', 'A Swedish Love Story', 'Jonathan'];
+    const moviesToRefresh = ['Jonathan', 'Kaili Blues'];
     // Clear cache if any of these movies are cached (to ensure updated mappings are used)
     const cachedMovies = moviesToRefresh.filter(title => posterCache[title]);
     
