@@ -146,24 +146,32 @@ function clearPosterCache(titles) {
     console.log('Cleared cache for:', titles);
 }
 
-// Force-refresh these posters for all users (add titles here when mappings change)
+// Bump this number whenever you change a poster mapping to force a one-time refresh
+const POSTER_CACHE_VERSION = 2;
 const forceRefreshPosters = ['The Boys Next Door', 'A Hero'];
 
-// On page load, purge bad cached URLs and force-refresh specific posters
+// On page load, purge bad cached URLs + one-time force-refresh when version changes
 (function() {
     let purged = [];
+    const cachedVersion = parseInt(localStorage.getItem('posterCacheVersion') || '0');
+
     Object.keys(posterCache).forEach(title => {
         if (!isRealPosterUrl(posterCache[title])) {
             delete posterCache[title];
             purged.push(title);
         }
     });
-    forceRefreshPosters.forEach(title => {
-        if (posterCache[title]) {
-            delete posterCache[title];
-            purged.push(title);
-        }
-    });
+
+    if (cachedVersion < POSTER_CACHE_VERSION) {
+        forceRefreshPosters.forEach(title => {
+            if (posterCache[title]) {
+                delete posterCache[title];
+                purged.push(title);
+            }
+        });
+        localStorage.setItem('posterCacheVersion', String(POSTER_CACHE_VERSION));
+    }
+
     if (purged.length > 0) {
         localStorage.setItem('moviePosterCache', JSON.stringify(posterCache));
         console.log('Purged cached posters for:', purged);
