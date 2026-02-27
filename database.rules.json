@@ -1,0 +1,13 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "movies": {
+      ".read": "auth != null",
+      "$movieId": {
+        ".write": "auth != null",
+        ".validate": "!newData.exists() || (newData.hasChildren(['title', 'picker', 'ratings', 'average']) && newData.child('title').isString() && newData.child('title').val().length > 0 && newData.child('title').val().length <= 200 && newData.child('picker').isString() && (newData.child('picker').val() === 'Gabe' || newData.child('picker').val() === 'Isa' || newData.child('picker').val() === 'Shane' || newData.child('picker').val() === 'Bo' || newData.child('picker').val() === 'Andrew' || newData.child('picker').val() === 'Rachel') && newData.child('ratings').hasChildren(['Gabe', 'Isa', 'Shane', 'Bo', 'Andrew', 'Rachel']) && newData.child('ratings/Gabe').isString() && newData.child('ratings/Isa').isString() && newData.child('ratings/Shane').isString() && newData.child('ratings/Bo').isString() && newData.child('ratings/Andrew').isString() && newData.child('ratings/Rachel').isString() && newData.child('average').isNumber() && newData.child('average').val() >= 0 && newData.child('average').val() <= 10 && (!newData.child('dateAdded').exists() || newData.child('dateAdded').isString()) && (!newData.child('poster').exists() || newData.child('poster').isString()))"
+      }
+    }
+  }
+}
