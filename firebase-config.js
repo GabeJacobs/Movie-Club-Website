@@ -11,6 +11,14 @@ const firebaseConfig = {
 
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
+
+// App Check — verifies requests come from your real website (invisible to users)
+const appCheck = firebase.appCheck();
+appCheck.activate(
+    new firebase.appCheck.ReCaptchaV3Provider('6LdLIH8sAAAAAJ1XPDb2Nwb3gdtUSwtIq71jBESi'),
+    true
+);
+
 const db = firebase.database();
 
 // Sanitize title for use as Firebase key (Firebase doesn't allow . # $ [ ])
