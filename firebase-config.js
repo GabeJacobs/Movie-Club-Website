@@ -61,7 +61,7 @@ async function fbMigrateIfNeeded() {
         console.warn('Could not read localStorage for migration:', e);
     }
 
-    await db.ref('movies').set(updates);
+    await db.ref('movies').update(updates);
     console.log(`Migrated ${Object.keys(updates).length} movies to Firebase`);
     return true;
 }

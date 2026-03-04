@@ -1,0 +1,32 @@
+{
+  "rules": {
+    "movies": {
+      ".read": true,
+      "$movieId": {
+        ".write": true,
+        ".validate": "newData.hasChildren(['title', 'picker', 'ratings', 'average', 'dateAdded'])",
+        "title": {
+          ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 300"
+        },
+        "picker": {
+          ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 50"
+        },
+        "ratings": {
+          ".validate": "newData.hasChildren()",
+          "$member": {
+            ".validate": "(newData.isString() && newData.val().length <= 10) || (newData.isNumber() && newData.val() >= 0 && newData.val() <= 10)"
+          }
+        },
+        "average": {
+          ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 10"
+        },
+        "dateAdded": {
+          ".validate": "newData.isString() && newData.val().length <= 30"
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
+    }
+  }
+}
